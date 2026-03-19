@@ -1,3 +1,4 @@
+#include<GL/glut.h>
 #include "sky.cpp"
 #include "foreground.cpp"
 #include "landscape.cpp"
@@ -20,8 +21,10 @@ void display(){
 
     sky();
 
-    // city landscape
-    // mountain
+    
+
+    landscape();
+    
     ground();
     rail();
     // train

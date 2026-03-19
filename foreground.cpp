@@ -1,6 +1,6 @@
 // main land, rail & train
 
-float GROUND_HEIGHT = 150.0f;
+GLfloat GROUND_HEIGHT = 150.0f;
 
 void ground(){
     glBegin(GL_QUADS);
