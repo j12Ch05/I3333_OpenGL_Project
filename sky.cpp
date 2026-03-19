@@ -57,20 +57,17 @@ void onMouseClick(int btn, int state, int x, int y){
     }
 }
 
-void drawCircle(float centerX, float centerY, float radius, int segments = 40)
-{
+void drawCircle(float centerX, float centerY, float radius, int segments = 40){
     glBegin(GL_TRIANGLE_FAN);
     glVertex2f(centerX, centerY);
-    for (int i = 0; i <= segments; ++i)
-    {
+    for (int i = 0; i <= segments; ++i){
         float angle = 2.0f * 3.1415926f * i / segments;
         glVertex2f(centerX + cos(angle) * radius, centerY + sin(angle) * radius);
     }
     glEnd();
 }
 
-void cloud(float x, float y, float scale)
-{
+void cloud(float x, float y, float scale){
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     drawCircle(x, y, 28.0f * scale);
     drawCircle(x + 28.0f * scale, y + 12.0f * scale, 34.0f * scale);
@@ -78,8 +75,7 @@ void cloud(float x, float y, float scale)
     drawCircle(x + 90.0f * scale, y + 10.0f * scale, 24.0f * scale);
 }
 
-void drawRay(int x, int y)
-{
+void drawRay(int x, int y){
     glBegin(GL_TRIANGLES);
     glVertex2i(x, y);
     glVertex2i(x + 14, y);
@@ -87,8 +83,7 @@ void drawRay(int x, int y)
     glEnd();
 }
 
-void sun(float r, float g, float b)
-{
+void sun(float r, float g, float b){
     const float sunX = 150.0f;
     const float sunY = 500.0f;
     const float sunRadius = 29.0f;
@@ -97,8 +92,7 @@ void sun(float r, float g, float b)
     drawCircle(sunX, sunY, sunRadius);
 
     glColor4f(r, g, b, 0.8f);
-    for (int i = 0; i < 12; ++i)
-    {
+    for (int i = 0; i < 12; ++i){
         glPushMatrix();
         glTranslatef(sunX, sunY, 0.0f);
         glRotatef(sunRotation + i * 30.0f, 0.0f, 0.0f, 1.0f);
@@ -156,72 +150,22 @@ void sky(){
     
 }
 
-void moveCloud(float &cloudX, float speed, float scale)
-{
+void moveCloud(float &cloudX, float speed, float scale){
     cloudX -= speed;
-    if (cloudX < -(140.0f * scale))
-    {
+    if (cloudX < -(140.0f * scale)){
         cloudX = WINDOW_WIDTH + 50.0f;
     }
 }
 
-void update(int)
-{
+void update(int){
     moveCloud(cloudOffset1, 1.1f, 1.2f);
     moveCloud(cloudOffset2, 0.8f, 0.95f);
     moveCloud(cloudOffset3, 1.4f, 1.05f);
     sunRotation += 0.4f;
-    if (sunRotation >= 360.0f)
-    {
+    if (sunRotation >= 360.0f){
         sunRotation -= 360.0f;
     }
 
     glutPostRedisplay();
     glutTimerFunc(16, update, 0);
-}
-
-void init()
-{
-    initStars();
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0, WINDOW_WIDTH, 0.0, WINDOW_HEIGHT, -1.0, 1.0);
-    glMatrixMode(GL_MODELVIEW);
-}
-
-void display()
-{
-    glClear(GL_COLOR_BUFFER_BIT);
-    glLoadIdentity();
-
-    sky();
-
-    // city landscape
-    // mountain
-    // ground
-    // train
-
-    glutSwapBuffers();
-}
-
-int main(int argc, char **argv)
-{
-    //glutReshapeFunc()
-    glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-    glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-    glutInitWindowPosition(100, 100);
-    glutCreateWindow("Graphics Project");
-    glutPassiveMotionFunc(onMouseMove);
-    glutMouseFunc(onMouseClick);
-    init();
-    glutDisplayFunc(display);
-    glutTimerFunc(0, update, 0);
-    glutMainLoop();
-
-    return 0;
 }
