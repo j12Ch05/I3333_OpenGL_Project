@@ -1,4 +1,4 @@
-#include<GL/glut.h>
+#include <GL/glut.h>
 #include "sky.cpp"
 #include "foreground.cpp"
 #include "landscape.cpp"
@@ -20,14 +20,12 @@ void display(){
     glLoadIdentity();
 
     sky();
-
-    
-
+    drawHill();
     landscape();
-    
     ground();
     rail();
-    // train
+    // Draw train layer
+    train();
 
     glutSwapBuffers();
 }

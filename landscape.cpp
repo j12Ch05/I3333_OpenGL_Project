@@ -1,6 +1,8 @@
 GLfloat scrollX = 0.0f;
 GLfloat moveSpeed = 3.0f;
-GLfloat resetPoint = 6500.0f;
+GLfloat resetPoint = 7600.0f;
+GLfloat mountainScrollX = 0.0f;
+GLfloat mountainSpeed = 1.2f;
 GLint numberOfBuildings = 12;
 GLint numberOfSkyscrapers = 4;
 GLint numberofMountains = 2;
@@ -12,6 +14,53 @@ struct vertex {
 struct color {
     GLfloat r, g, b;
 };
+
+void drawFilledCircle(float cx, float cy, float r, int segments = 64, float startAngle = 0.0, float sweep = 2.0 * M_PI){
+
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(cx, cy);
+    for (int i = 0; i <= segments; ++i) {
+        float theta = startAngle + (sweep * i) / segments;
+        float x = cx + r * cosf(theta);
+        float y = cy + r * sinf(theta);
+        glVertex2f(x, y);
+    }
+    glEnd();
+}
+
+void drawHill(){
+    const GLfloat baseY = 150.0f;
+    const GLfloat leftX = -30.0f;
+    const GLfloat rightX = 360.0f;
+
+    glBegin(GL_POLYGON);
+    // Base shadow
+    glColor3f(0.16f, 0.43f, 0.18f);
+    glVertex2f(leftX, baseY);
+    glVertex2f(rightX, baseY);
+
+    // Soft upper slope
+    glColor3f(0.28f, 0.67f, 0.31f);
+    glVertex2f(320.0f, 175.0f);
+    glVertex2f(280.0f, 230.0f);
+    glVertex2f(235.0f, 290.0f);
+    glVertex2f(185.0f, 335.0f);
+    glVertex2f(135.0f, 315.0f);
+    glVertex2f(90.0f, 260.0f);
+    glVertex2f(45.0f, 205.0f);
+    glVertex2f(5.0f, 170.0f);
+    glEnd();
+
+    glBegin(GL_POLYGON);
+    // Front highlight
+    glColor4f(0.42f, 0.78f, 0.37f, 0.55f);
+    glVertex2f(50.0f, baseY);
+    glVertex2f(255.0f, baseY);
+    glColor4f(0.66f, 0.89f, 0.52f, 0.12f);
+    glVertex2f(195.0f, 280.0f);
+    glVertex2f(120.0f, 250.0f);
+    glEnd();
+}
 
 //Drawing the components of a building
 
@@ -274,13 +323,13 @@ void moutain() {
     }
 
     GLfloat current_x = 0.0f;
-    GLfloat ground_y = 150.0f;
+    GLfloat ground_y = 120.0f;
     GLfloat gap = 800.0f;
     
 
     for (GLint i = 0; i < numberofMountains; i++) {
-        GLfloat width = 500.0f; 
-        GLfloat height = 480.0f;
+        GLfloat width = 440.0f; 
+        GLfloat height = 400.0f;
 
         //drawing the body of the mountain
         glColor3f(body.r, body.g, body.b);
@@ -293,13 +342,13 @@ void moutain() {
         glVertex2f(current_x + width, ground_y);
         glEnd();
 
-        //adding the snow
+        // Snow fits peak
         glColor3f(snow.r, snow.g, snow.b);
         glBegin(GL_POLYGON);
         glVertex2f(current_x + 120.5f, height - 50.0f);
         glVertex2f(current_x + 150.0f, height);
         glVertex2d(current_x + 210.0f, height);
-        glVertex2f(current_x + 255.0f, height - 50.0f);
+        glVertex2f(current_x + 250.0f, height - 50.0f);
         glEnd();
         
         current_x += gap + width;
@@ -365,27 +414,44 @@ void tree() {
 
 
 void landscape() {
+    // Foreground scroll
     scrollX -= moveSpeed; 
+    // Background scroll
+    mountainScrollX -= mountainSpeed;
 
     // Reset loop
     if (scrollX < -resetPoint) {
         scrollX = 0.0f;
     }
+    // Reset mountain loop
+    if (mountainScrollX < -resetPoint) {
+        mountainScrollX = 0.0f;
+    }
+
+    glPushMatrix();
+    // Mountains move slower
+    glTranslatef(mountainScrollX, 0.0f, 0.0f);
+    // First mountain copy
+    moutain();
+    // Second mountain copy
+    glTranslatef(resetPoint, 0.0f, 0.0f);
+    moutain();
+    glPopMatrix();
 
     glPushMatrix(); 
+    // Buildings move faster
     glTranslatef(scrollX, 0.0f, 0.0f); 
 
     // First instance
-    moutain();
     skyscraper();
     building();
     tree();
 
     // Repeat instance for seamless scroll
     glTranslatef(resetPoint, 0.0f, 0.0f);
-    moutain();
     skyscraper();
     building();
+    tree();
 
     glPopMatrix(); 
 }
