@@ -1,11 +1,9 @@
 # I3333_OpenGL_Project
 
-Repository for course I3333
+### Repository for the I3333 course project
+- Run the main.cpp file
+- sky.cpp, landscape.cpp and foreground.cpp do not run on their own, they will error out and it is intended.
+- Incase the main.cpp doesnt work, run the failsafe.cpp file
 
 Remaining Tasks:
-
-- Smooth time transitions for elements (Omar)
-- Better Train(Check with the team)
-- Train carriages(Charboul)
-- Train station going into loop(Check with the team)
 - Report

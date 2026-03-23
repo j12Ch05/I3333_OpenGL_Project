@@ -7,7 +7,7 @@ GLint numberOfBuildings = 12;
 GLint numberOfSkyscrapers = 4;
 GLint numberofMountains = 2;
 GLint numberOfTrees = 25;
-#define M_PI 3.141592653
+
 struct vertex {
     GLfloat x, y;
 };
@@ -16,6 +16,21 @@ struct color {
     GLfloat r, g, b;
 };
 
+// Smooth color blend
+color blendLandscapeColor(color day, color night) {
+    return {
+        lerp(day.r, night.r, dayTime),
+        lerp(day.g, night.g, dayTime),
+        lerp(day.b, night.b, dayTime)
+    };
+}
+
+// Pick blended color
+color pickLandscapeColor(color day, color night) {
+    return blendLandscapeColor(day, night);
+}
+
+// Draw filled circle
 void drawFilledCircle(float cx, float cy, float r, int segments = 64, float startAngle = 0.0, float sweep = 2.0 * M_PI){
 
     glBegin(GL_TRIANGLE_FAN);
@@ -29,19 +44,24 @@ void drawFilledCircle(float cx, float cy, float r, int segments = 64, float star
     glEnd();
 }
 
+// Draw front hill
 void drawHill(){
     const GLfloat baseY = 150.0f;
     const GLfloat leftX = -30.0f;
     const GLfloat rightX = 360.0f;
+    color baseShadow = pickLandscapeColor({0.16f, 0.43f, 0.18f}, {0.06f, 0.18f, 0.10f});
+    color upperSlope = pickLandscapeColor({0.28f, 0.67f, 0.31f}, {0.10f, 0.28f, 0.15f});
+    color frontHighlight = pickLandscapeColor({0.42f, 0.78f, 0.37f}, {0.16f, 0.34f, 0.20f});
+    color frontGlow = pickLandscapeColor({0.66f, 0.89f, 0.52f}, {0.24f, 0.42f, 0.26f});
 
     glBegin(GL_POLYGON);
-    // Base shadow
-    glColor3f(0.16f, 0.43f, 0.18f);
+    // Hill base
+    glColor3f(baseShadow.r, baseShadow.g, baseShadow.b);
     glVertex2f(leftX, baseY);
     glVertex2f(rightX, baseY);
 
-    // Soft upper slope
-    glColor3f(0.28f, 0.67f, 0.31f);
+    // Upper slope
+    glColor3f(upperSlope.r, upperSlope.g, upperSlope.b);
     glVertex2f(320.0f, 175.0f);
     glVertex2f(280.0f, 230.0f);
     glVertex2f(235.0f, 290.0f);
@@ -53,25 +73,21 @@ void drawHill(){
     glEnd();
 
     glBegin(GL_POLYGON);
-    // Front highlight
-    glColor4f(0.42f, 0.78f, 0.37f, 0.55f);
+    // Front glow
+    glColor4f(frontHighlight.r, frontHighlight.g, frontHighlight.b, 0.55f);
     glVertex2f(50.0f, baseY);
     glVertex2f(255.0f, baseY);
-    glColor4f(0.66f, 0.89f, 0.52f, 0.12f);
+    glColor4f(frontGlow.r, frontGlow.g, frontGlow.b, 0.12f);
     glVertex2f(195.0f, 280.0f);
     glVertex2f(120.0f, 250.0f);
     glEnd();
 }
 
-//Drawing the components of a building
-
+// Draw building wall
 void buildingWall(vertex v1, vertex v2) {
+    color wall = blendLandscapeColor({0.95f, 0.85f, 0.7f}, {0.1f, 0.1f, 0.2f});
     glBegin(GL_POLYGON);
-    if (time == "day") {
-        glColor3f(0.95f, 0.85f, 0.7f);
-    } else {
-        glColor3f(0.1f, 0.1f, 0.2f);
-    }
+    glColor3f(wall.r, wall.g, wall.b);
     glVertex2f(v1.x, v1.y);
     glVertex2f(v1.x, v2.y);
     glVertex2f(v2.x, v2.y);
@@ -79,13 +95,11 @@ void buildingWall(vertex v1, vertex v2) {
     glEnd();
 }
 
+// Draw building roof
 void buildingRoof(vertex v1, vertex v2) {
+    color roof = blendLandscapeColor({0.7f, 0.25f, 0.15f}, {0.05f, 0.05f, 0.1f});
     glBegin(GL_POLYGON);
-    if (time == "day") {
-        glColor3f(0.7f, 0.25f, 0.15f);
-    } else {
-        glColor3f(0.05f, 0.05f, 0.1f);
-    }
+    glColor3f(roof.r, roof.g, roof.b);
     glVertex2f(v1.x, v1.y);
     glVertex2f(v2.x, v2.y);
     glVertex2f(v2.x + 125.0f, v2.y);
@@ -93,13 +107,11 @@ void buildingRoof(vertex v1, vertex v2) {
     glEnd();
 }
 
+// Draw building window
 void buildingWindow(vertex v1, vertex v2) {
+    color window = blendLandscapeColor({0.7f, 0.9f, 1.0f}, {1.0f, 0.85f, 0.3f});
     glBegin(GL_POLYGON);
-    if (time == "day") {
-        glColor3f(0.7f, 0.9f, 1.0f);
-    } else {
-        glColor3f(1.0f, 0.85f, 0.3f);
-    }
+    glColor3f(window.r, window.g, window.b);
     glVertex2f(v1.x, v1.y);
     glVertex2f(v1.x, v2.y);
     glVertex2f(v2.x, v2.y);
@@ -107,13 +119,11 @@ void buildingWindow(vertex v1, vertex v2) {
     glEnd();
 }
 
+// Draw building door
 void buildingDoor(vertex v1, vertex v2) {
+    color door = blendLandscapeColor({0.60f, 0.40f, 0.20f}, {0.10f, 0.08f, 0.12f});
     glBegin(GL_POLYGON);
-    if (time == "day") {
-        glColor3f(0.60f, 0.40f, 0.20f);
-    } else {
-        glColor3f(0.10f, 0.08f, 0.12f);
-    }
+    glColor3f(door.r, door.g, door.b);
     glVertex2f(v1.x, v1.y);
     glVertex2f(v1.x, v2.y);
     glVertex2f(v2.x, v2.y);
@@ -121,32 +131,33 @@ void buildingDoor(vertex v1, vertex v2) {
     glEnd();
 }
 
+// Draw building rows
 void building() {
     GLfloat current_x = 25.0f;
     GLfloat ground_y = 150.0f;
     GLfloat gap = 230.0f;
 
-    //drawing the first set of buildings
+    // First row
     for (GLint i = 0; i < numberOfBuildings; i++) {
         GLfloat width = 125.0f; 
         GLfloat height = 170.0f;
 
-        //Drawing the wall
+        // Wall panel
         vertex vWall1 = { current_x, ground_y }; 
         vertex vWall2 = { current_x + width, ground_y + height };
         buildingWall(vWall1, vWall2);
 
-        //Drawing the roof
+        // Roof panel
         vertex vRoof1 = { current_x - 10.0f, ground_y + height }; 
         vertex vRoof2 = { current_x, ground_y + height + 20.0f };
         buildingRoof(vRoof1, vRoof2);
 
-        //Drawing the door
+        // Door panel
         vertex vDoor1 = { current_x + 62.5f - 10.0f, ground_y }; 
         vertex vDoor2 = { current_x + 62.5f + 10.0f, ground_y + 30.0f };
         buildingDoor(vDoor1, vDoor2);
 
-        //Drawing pairs of window
+        // Window pairs
         GLfloat winWidth = 20.0f; 
         GLfloat winHeight = 25.0f; 
         GLfloat floorSpacing = 40.0f;
@@ -199,14 +210,11 @@ void building() {
     }
 }
 
-//Drawing the components of a skyscraper
+// Draw tower wall
 void skyscraperWall(vertex v1, vertex v2) {
+    color wall = blendLandscapeColor({0.75f, 0.75f, 0.75f}, {0.10f, 0.10f, 0.15f});
     glBegin(GL_POLYGON);
-    if (time == "day") {
-        glColor3f(0.75f, 0.75f, 0.75f);
-    } else {
-        glColor3f(0.10f, 0.10f, 0.15f);
-    }
+    glColor3f(wall.r, wall.g, wall.b);
     glVertex2f(v1.x, v1.y);
     glVertex2f(v1.x, v2.y);
     glVertex2f(v2.x, v2.y);
@@ -214,53 +222,44 @@ void skyscraperWall(vertex v1, vertex v2) {
     glEnd();
 }
 
+// Draw tower roof
 void skyscraperRoof(vertex v1, vertex v2) {
-    // First Level
+    color first = blendLandscapeColor({0.50f, 0.50f, 0.50f}, {0.05f, 0.05f, 0.10f});
+    color second = blendLandscapeColor({0.60f, 0.60f, 0.60f}, {0.08f, 0.08f, 0.15f});
+    color antenna = blendLandscapeColor({0.75f, 0.75f, 0.75f}, {0.02f, 0.02f, 0.05f});
+
+    // First tier
     glBegin(GL_POLYGON);
-    if (time == "day") {
-        glColor3f(0.50f, 0.50f, 0.50f);
-    } else {
-        glColor3f(0.05f, 0.05f, 0.10f);
-    }
+    glColor3f(first.r, first.g, first.b);
     glVertex2f(v1.x, v1.y);
     glVertex2f(v1.x + 10, v2.y);
     glVertex2f(v2.x, v2.y);
     glVertex2f(v2.x + 10, v1.y);
     glEnd();
 
-    // Second Level
+    // Second tier
     glBegin(GL_POLYGON);
-    if (time == "day") {
-        glColor3f(0.60f, 0.60f, 0.60f);
-    } else {
-        glColor3f(0.08f, 0.08f, 0.15f);
-    }
+    glColor3f(second.r, second.g, second.b);
     glVertex2f(v1.x + 15, v2.y);
     glVertex2f(v1.x + 20, v2.y + 10);
     glVertex2f(v2.x - 10, v2.y + 10);
     glVertex2f(v2.x - 5, v2.y);
     glEnd();
 
-    // Antenna
+    // Roof antenna
     glBegin(GL_POLYGON);
-    if (time == "day") {
-        glColor3f(0.75f, 0.75f, 0.75f);
-    } else {
-        glColor3f(0.02f, 0.02f, 0.05f);
-    }
+    glColor3f(antenna.r, antenna.g, antenna.b);
     glVertex2f(((v2.x - v1.x + 10) / 2) - 5 + v1.x, v2.y + 10);
     glVertex2f(v1.x + (v2.x - v1.x + 10) / 2, v2.y + 80.0f);
     glVertex2f(((v2.x - v1.x + 10) / 2) + 5 + v1.x, v2.y + 10);
     glEnd();
 }
 
+// Draw tower window
 void skyscraperWindow(vertex v1, vertex v2) {
+    color window = blendLandscapeColor({0.65f, 0.85f, 0.95f}, {1.00f, 0.90f, 0.60f});
     glBegin(GL_POLYGON);
-    if (time == "day") {
-        glColor3f(0.65f, 0.85f, 0.95f);
-    } else {
-        glColor3f(1.00f, 0.90f, 0.60f);
-    }
+    glColor3f(window.r, window.g, window.b);
     glVertex2f(v1.x, v1.y);
     glVertex2f(v1.x, v2.y);
     glVertex2f(v2.x, v2.y);
@@ -268,6 +267,7 @@ void skyscraperWindow(vertex v1, vertex v2) {
     glEnd();
 }
 
+// Draw skyscrapers
 void skyscraper() {
     GLfloat current_x = 290.0f;
     GLfloat ground_y = 150.0f;
@@ -278,33 +278,33 @@ void skyscraper() {
         GLfloat width = 97.9f; 
         GLfloat height = 360.0f;
 
-        //drawing the wall
+        // Wall panel
         vertex vWall1 = { current_x, ground_y }; 
         vertex vWall2 = { current_x + width, ground_y + height };
         skyscraperWall(vWall1, vWall2);
 
-        //drawing the roof with the antenna
+        // Roof section
         vertex vRoof1 = { current_x, ground_y + height }; 
         vertex vRoof2 = { current_x + width - 10.0f, ground_y + height + 10.0f };
         skyscraperRoof(vRoof1, vRoof2);
 
-        //drawing a group of 3 windowa
+        // Triple windows
         GLfloat winWidth = 20.0f; 
         GLfloat winHeight = 25.0f; 
         GLfloat floorSpacing = 40.0f;
 
         for (GLfloat h = 30.0f; h < height - 10.0f; h += floorSpacing) {
-            //left window
+            // Left window
             vertex vWinL1 = { current_x + 10.0f, ground_y + h }; 
             vertex vWinL2 = { current_x + 10.0f + winWidth, ground_y + h + winHeight };
             skyscraperWindow(vWinL1, vWinL2);
 
-            //mid window
+            // Mid window
             vertex vWinM1 = { current_x + width - 57.9f, ground_y + h }; 
             vertex vWinM2 = { current_x + width - 57.9f + winWidth, ground_y + h + winHeight };
             skyscraperWindow(vWinM1, vWinM2);
 
-            //right window
+            // Right window
             vertex vWinR1 = { current_x + width - 30.0f, ground_y + h }; 
             vertex vWinR2 = { current_x + width - 30.0f + winWidth, ground_y + h + winHeight };
             skyscraperWindow(vWinR1, vWinR2);
@@ -313,15 +313,10 @@ void skyscraper() {
     }
 }
 
+// Draw mountain row
 void moutain() {
-    color body, snow;
-    if (time == "day") {
-        body = { 0.25f, 0.28f, 0.35f }; 
-        snow = { 0.95f, 0.98f, 1.00f };
-    } else {
-        body = { 0.05f, 0.05f, 0.12f }; 
-        snow = { 0.30f, 0.40f, 0.60f };
-    }
+    color body = blendLandscapeColor({0.25f, 0.28f, 0.35f}, {0.05f, 0.05f, 0.12f});
+    color snow = blendLandscapeColor({0.95f, 0.98f, 1.00f}, {0.30f, 0.40f, 0.60f});
 
     GLfloat current_x = 0.0f;
     GLfloat ground_y = 120.0f;
@@ -332,7 +327,7 @@ void moutain() {
         GLfloat width = 440.0f; 
         GLfloat height = 400.0f;
 
-        //drawing the body of the mountain
+        // Mountain body
         glColor3f(body.r, body.g, body.b);
         glBegin(GL_POLYGON);
         glVertex2f(current_x, ground_y);
@@ -343,7 +338,7 @@ void moutain() {
         glVertex2f(current_x + width, ground_y);
         glEnd();
 
-        // Snow fits peak
+        // Snow cap
         glColor3f(snow.r, snow.g, snow.b);
         glBegin(GL_POLYGON);
         glVertex2f(current_x + 120.5f, height - 50.0f);
@@ -356,14 +351,11 @@ void moutain() {
     }
 }
 
-// Drawing the Trunk of the tree
+// Draw tree trunk
 void treeTrunk(vertex v1, vertex v2) {
+    color trunk = blendLandscapeColor({0.45f, 0.30f, 0.15f}, {0.05f, 0.03f, 0.02f});
     glBegin(GL_POLYGON);
-    if (time == "day") {
-        glColor3f(0.45f, 0.30f, 0.15f); // Brown
-    } else {
-        glColor3f(0.05f, 0.03f, 0.02f); // Dark Shadow
-    }
+    glColor3f(trunk.r, trunk.g, trunk.b);
     glVertex2f(v1.x, v1.y);
     glVertex2f(v1.x, v2.y);
     glVertex2f(v2.x, v2.y);
@@ -371,20 +363,18 @@ void treeTrunk(vertex v1, vertex v2) {
     glEnd();
 }
 
-// Drawing the Leaves (Canopy)
+// Draw tree canopy
 void treeLeaves(vertex v1, vertex v2, vertex v3) {
+    color leaves = blendLandscapeColor({0.15f, 0.50f, 0.20f}, {0.02f, 0.10f, 0.05f});
     glBegin(GL_TRIANGLES);
-    if (time == "day") {
-        glColor3f(0.15f, 0.50f, 0.20f); // Green
-    } else {
-        glColor3f(0.02f, 0.10f, 0.05f); // Dark Green/Black
-    }
+    glColor3f(leaves.r, leaves.g, leaves.b);
     glVertex2f(v1.x, v1.y);
     glVertex2f(v2.x, v2.y);
     glVertex2f(v3.x, v3.y);
     glEnd();
 }
 
+// Draw tree row
 void tree() {
     GLfloat current_x = 100.0f; 
     GLfloat ground_y = 150.0f; 
@@ -412,56 +402,33 @@ void tree() {
     }
 }
 
+// Draw station
 void drawStation(){
-    color platform,edge,building,roof,window,winLines,door,billboard,text;
+    color platform = blendLandscapeColor({0.8, 0.78, 0.72}, {0.18, 0.22, 0.32});
+    color edge = blendLandscapeColor({0.95, 0.9, 0.2}, {0.5, 0.45, 0.2});
+    color building = blendLandscapeColor({0.86, 0.6, 0.45}, {0.25, 0.18, 0.22});
+    color roof = blendLandscapeColor({0.55, 0.13, 0.13}, {0.15, 0.05, 0.08});
+    color window = blendLandscapeColor({0.95, 0.95, 1.0}, {1.0, 0.85, 0.3});
+    color winLines = blendLandscapeColor({0.2, 0.2, 0.25}, {0.05, 0.05, 0.12});
+    color door = blendLandscapeColor({0.35, 0.18, 0.15}, {0.12, 0.06, 0.04});
+    color billboard = blendLandscapeColor({0.98, 0.98, 0.95}, {0.2, 0.22, 0.3});
+    color text = blendLandscapeColor({0.1, 0.1, 0.15}, {0.9, 0.85, 0.5});
 
-    if(time == "day"){
-        platform = {0.8, 0.78, 0.72};
-        edge = {0.95, 0.9, 0.2};
-        building = {0.86, 0.6, 0.45};
-        roof = {0.55, 0.13, 0.13};
-        window = {0.95, 0.95, 1.0};
-        winLines={0.2, 0.2, 0.25};
-        door = {0.35, 0.18, 0.15};
-    }
-    if(time == "day"){
-        platform = {0.8, 0.78, 0.72};
-        edge = {0.95, 0.9, 0.2};
-        building = {0.86, 0.6, 0.45};
-        roof = {0.55, 0.13, 0.13};
-        window = {0.95, 0.95, 1.0};
-        winLines={0.2, 0.2, 0.25};
-        door = {0.35, 0.18, 0.15};
-        billboard = {0.98, 0.98, 0.95};
-        text = {0.1, 0.1, 0.15};
-    }
-    else {
-        platform = {0.18, 0.22, 0.32};
-        edge = {0.5, 0.45, 0.2};
-        building = {0.25, 0.18, 0.22};
-        roof = {0.15, 0.05, 0.08};
-        window = {1.0, 0.85, 0.3};
-        winLines = {0.05, 0.05, 0.12};
-        door = {0.12, 0.06, 0.04};
-        billboard = {0.2, 0.22, 0.3};
-        text = {0.9, 0.85, 0.5};
-    }
-
-    // Platform
+    // Platform base
     glColor3f(platform.r,platform.g,platform.b);
     drawRect(5200.0, 150.0, 760.0, 40.0);
 
-    // Platform edge stripe
+    // Edge stripe
     glColor3f(edge.r,edge.g,edge.b);
     drawRect(5200.0, 190.0, 760.0, 6.0);
 
-    // Station building base
+    // Station shell
     float bx = 5440.0, by = 190.0;
     float bw = 280.0, bh = 110.0;
     glColor3f(building.r,building.g,building.b);
     drawRect(bx, by, bw, bh);
 
-    // Roof
+    // Station roof
     glColor3f(roof.r,roof.g,roof.b);
     glBegin(GL_TRIANGLES);
     glVertex2f(bx - 10.0, by + bh);
@@ -469,7 +436,7 @@ void drawStation(){
     glVertex2f(bx + bw / 2.0, by + bh + 60.0);
     glEnd();
 
-    //billboard
+    // Sign board
     glColor3f(billboard.r,billboard.g,billboard.b);
     drawRect(bx+40,by+90,bw-80,bh-70);
     glColor3f(text.r,text.g,text.b);
@@ -489,7 +456,7 @@ void drawStation(){
 	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, 'N');
     
 
-    // Windows
+    // Station windows
     glColor3f(window.r,window.g,window.b);
     float ww = 40.0, wh = 50.0;
     float wy = by + 30.0;
@@ -498,7 +465,7 @@ void drawStation(){
     float wxLeft = doorCenterX - windowCenterOffset - ww / 2.0;
     float wxRight = doorCenterX + windowCenterOffset - ww / 2.0;
 
-    // left window
+    // Left window
     drawRect(wxLeft, wy, ww, wh);
     glColor3f(winLines.r,winLines.g,winLines.b);
     glBegin(GL_LINES);
@@ -508,7 +475,7 @@ void drawStation(){
     glVertex2f(wxLeft + ww, wy + wh / 2.0);
     glEnd();
 
-    // right window
+    // Right window
     glColor3f(window.r,window.g,window.b);
     drawRect(wxRight, wy, ww, wh);
     glColor3f(winLines.r,winLines.g,winLines.b);
@@ -519,53 +486,52 @@ void drawStation(){
     glVertex2f(wxRight + ww, wy + wh / 2.0);
     glEnd();
 
-    // Door
+    // Station door
     glColor3f(door.r,door.g,door.b);
     drawRect(bx + bw / 2.0 - 22.0, by, 44.0, 70.0);
 }
-
-
-
+// Draw scrolling world
 void landscape() {
-    // Foreground scroll
+    // Scroll foreground
     scrollX -= moveSpeed; 
-    // Background scroll
+    // Scroll mountains
     mountainScrollX -= mountainSpeed;
 
-    // Reset loop
+    // Wrap foreground
     if (scrollX < -resetPoint) {
         scrollX = 0.0f;
     }
-    // Reset mountain loop
+    // Wrap mountains
     if (mountainScrollX < -resetPoint) {
         mountainScrollX = 0.0f;
     }
 
     glPushMatrix();
-    // Mountains move slower
+    // Move mountains
     glTranslatef(mountainScrollX, 0.0f, 0.0f);
-    // First mountain copy
+    // First pass
     moutain();
-    // Second mountain copy
+    // Second pass
     glTranslatef(resetPoint, 0.0f, 0.0f);
     moutain();
     glPopMatrix();
 
     glPushMatrix(); 
-    // Buildings move faster
+    // Move foreground
     glTranslatef(scrollX, 0.0f, 0.0f); 
 
-    // First instance
+    // First pass
     skyscraper();
     building();
     tree();
     drawStation();
 
-    // Repeat instance for seamless scroll
+    // Second pass
     glTranslatef(resetPoint, 0.0f, 0.0f);
     skyscraper();
     building();
     tree();
+    drawStation();
 
     glPopMatrix(); 
 }

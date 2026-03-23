@@ -26,10 +26,12 @@ int transitionDir = 1;
 
 int starX[30], starY[30];
 
+// Linear blend
 float lerp(float a, float b, float t){
     return a + (b - a) * t;
 }
 
+// Randomize star positions
 void initStars(){
     for(int i=0; i<30; i++){
         starX[i] = (rand() % WINDOW_WIDTH) + 10;
@@ -37,6 +39,7 @@ void initStars(){
     }
 }
 
+// Check sun hover
 bool onSun(int mouseX, int mouseY){
     float x = mouseX;
     float y = WINDOW_HEIGHT - mouseY;
@@ -47,7 +50,7 @@ bool onSun(int mouseX, int mouseY){
     return (dx*dx + dy*dy <= sunR*sunR);
 }
 
-// im used to skript events so i named it like this :>
+// Update cursor icon
 void onMouseMove(int x, int y){
     if(onSun(x, y)){
         glutSetCursor(GLUT_CURSOR_INFO);
@@ -56,22 +59,23 @@ void onMouseMove(int x, int y){
     }
 }
 
+// Handle sun clicks
 void onMouseClick(int btn, int state, int x, int y){
     if(btn == GLUT_LEFT_BUTTON && state == GLUT_DOWN && onSun(x, y)){
         if(time == "day"){
             initStars();
-            transitionDir = 1;      // day -> night
+            transitionDir = 1;      // To night
         }else{
             cloudOffset1 = CLOUD_START1;
             cloudOffset2 = CLOUD_START2;
             cloudOffset3 = CLOUD_START3;
-            transitionDir = -1;     // night -> day
+            transitionDir = -1;     // To day
         }
         transitioning = true;
-        //glutPostRedisplay();
     }
 }
 
+// Draw filled circle
 void drawCircle(float centerX, float centerY, float radius, int segments = 40){
     glBegin(GL_TRIANGLE_FAN);
     glVertex2f(centerX, centerY);
@@ -82,6 +86,7 @@ void drawCircle(float centerX, float centerY, float radius, int segments = 40){
     glEnd();
 }
 
+// Draw one cloud
 void cloud(float x, float y, float scale, float alpha){
     glColor4f(1.0f, 1.0f, 1.0f, alpha);
     drawCircle(x, y, 28.0f * scale);
@@ -90,6 +95,7 @@ void cloud(float x, float y, float scale, float alpha){
     drawCircle(x + 90.0f * scale, y + 10.0f * scale, 24.0f * scale);
 }
 
+// Draw one ray
 void drawRay(int x, int y){
     glBegin(GL_TRIANGLES);
     glVertex2i(x, y);
@@ -98,6 +104,7 @@ void drawRay(int x, int y){
     glEnd();
 }
 
+// Draw glowing sun
 void sun(float r, float g, float b, float alpha){
     const float sunX = 150.0f;
     const float sunY = 500.0f;
@@ -116,6 +123,7 @@ void sun(float r, float g, float b, float alpha){
     }
 }
 
+// Draw star field
 void stars(float alpha, float yOffset){
     glColor4f(1.0f, 1.0f, 1.0f, alpha);
     glPointSize(2.0f);
@@ -126,11 +134,13 @@ void stars(float alpha, float yOffset){
     glEnd();
 }
 
+// Draw moon disc
 void moon(float alpha){
     glColor4f(1.0f, 1.0f, 1.0f, alpha);
     drawCircle(sunX, sunY, sunR);
 }
 
+// Render sky layer
 void sky(){
     float bottomR = lerp(0.55f, 0.0f, dayTime);
     float bottomG = lerp(0.82f, 0.0f, dayTime);
@@ -169,6 +179,7 @@ void sky(){
     cloud(cloudOffset3 + cloudTransitionOffset, 475.0f, 0.3f, cloudAlpha);
 }
 
+// Scroll one cloud
 void moveCloud(float &cloudX, float speed, float scale){
     cloudX -= speed;
     if (cloudX < -(140.0f * scale)){
@@ -176,6 +187,7 @@ void moveCloud(float &cloudX, float speed, float scale){
     }
 }
 
+// Advance animation state
 void update(int){
     if(transitioning){
         dayTime += 0.01f * transitionDir;

@@ -1,8 +1,8 @@
 #include <GL/glut.h>
+#include <cmath>
 #include "sky.cpp"
 #include "foreground.cpp"
 #include "landscape.cpp"
-
 
 void init(){
     glEnable(GL_BLEND);
@@ -24,14 +24,12 @@ void display(){
     landscape();
     ground();
     rail();
-    // Draw train layer
     train();
 
     glutSwapBuffers();
 }
 
 int main(int argc, char **argv){
-    //glutReshapeFunc()
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -43,6 +41,5 @@ int main(int argc, char **argv){
     glutDisplayFunc(display);
     glutTimerFunc(0, update, 0);
     glutMainLoop();
-
     return 0;
 }
