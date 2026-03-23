@@ -7,6 +7,7 @@ GLint numberOfBuildings = 12;
 GLint numberOfSkyscrapers = 4;
 GLint numberofMountains = 2;
 GLint numberOfTrees = 25;
+#define M_PI 3.141592654
 
 struct vertex {
     GLfloat x, y;

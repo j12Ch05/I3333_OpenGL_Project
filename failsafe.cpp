@@ -3,6 +3,8 @@
 #include <string>
 using namespace std;
 
+#define M_PI 3.141592654
+
 const int WINDOW_WIDTH = 900;
 const int WINDOW_HEIGHT = 600;
 const float GROUND_HEIGHT = 150.0f;
