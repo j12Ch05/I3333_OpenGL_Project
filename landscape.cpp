@@ -412,6 +412,118 @@ void tree() {
     }
 }
 
+void drawStation(){
+    color platform,edge,building,roof,window,winLines,door,billboard,text;
+
+    if(time == "day"){
+        platform = {0.8, 0.78, 0.72};
+        edge = {0.95, 0.9, 0.2};
+        building = {0.86, 0.6, 0.45};
+        roof = {0.55, 0.13, 0.13};
+        window = {0.95, 0.95, 1.0};
+        winLines={0.2, 0.2, 0.25};
+        door = {0.35, 0.18, 0.15};
+    }
+    if(time == "day"){
+        platform = {0.8, 0.78, 0.72};
+        edge = {0.95, 0.9, 0.2};
+        building = {0.86, 0.6, 0.45};
+        roof = {0.55, 0.13, 0.13};
+        window = {0.95, 0.95, 1.0};
+        winLines={0.2, 0.2, 0.25};
+        door = {0.35, 0.18, 0.15};
+        billboard = {0.98, 0.98, 0.95};
+        text = {0.1, 0.1, 0.15};
+    }
+    else {
+        platform = {0.18, 0.22, 0.32};
+        edge = {0.5, 0.45, 0.2};
+        building = {0.25, 0.18, 0.22};
+        roof = {0.15, 0.05, 0.08};
+        window = {1.0, 0.85, 0.3};
+        winLines = {0.05, 0.05, 0.12};
+        door = {0.12, 0.06, 0.04};
+        billboard = {0.2, 0.22, 0.3};
+        text = {0.9, 0.85, 0.5};
+    }
+
+    // Platform
+    glColor3f(platform.r,platform.g,platform.b);
+    drawRect(5200.0, 150.0, 760.0, 40.0);
+
+    // Platform edge stripe
+    glColor3f(edge.r,edge.g,edge.b);
+    drawRect(5200.0, 190.0, 760.0, 6.0);
+
+    // Station building base
+    float bx = 5440.0, by = 190.0;
+    float bw = 280.0, bh = 110.0;
+    glColor3f(building.r,building.g,building.b);
+    drawRect(bx, by, bw, bh);
+
+    // Roof
+    glColor3f(roof.r,roof.g,roof.b);
+    glBegin(GL_TRIANGLES);
+    glVertex2f(bx - 10.0, by + bh);
+    glVertex2f(bx + bw + 10.0, by + bh);
+    glVertex2f(bx + bw / 2.0, by + bh + 60.0);
+    glEnd();
+
+    //billboard
+    glColor3f(billboard.r,billboard.g,billboard.b);
+    drawRect(bx+40,by+90,bw-80,bh-70);
+    glColor3f(text.r,text.g,text.b);
+    glRasterPos2i(bx+50, by+100);
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, 'T');
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, 'R');
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, 'A');
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, 'I');
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, 'N');
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, ' ');
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, 'S');
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, 'T');
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, 'A');
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, 'T');
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, 'I');
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, 'O');
+	glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, 'N');
+    
+
+    // Windows
+    glColor3f(window.r,window.g,window.b);
+    float ww = 40.0, wh = 50.0;
+    float wy = by + 30.0;
+    float doorCenterX = bx + bw / 2.0;
+    float windowCenterOffset = 80.0;
+    float wxLeft = doorCenterX - windowCenterOffset - ww / 2.0;
+    float wxRight = doorCenterX + windowCenterOffset - ww / 2.0;
+
+    // left window
+    drawRect(wxLeft, wy, ww, wh);
+    glColor3f(winLines.r,winLines.g,winLines.b);
+    glBegin(GL_LINES);
+    glVertex2f(wxLeft + ww / 2.0, wy);
+    glVertex2f(wxLeft + ww / 2.0, wy + wh);
+    glVertex2f(wxLeft, wy + wh / 2.0);
+    glVertex2f(wxLeft + ww, wy + wh / 2.0);
+    glEnd();
+
+    // right window
+    glColor3f(window.r,window.g,window.b);
+    drawRect(wxRight, wy, ww, wh);
+    glColor3f(winLines.r,winLines.g,winLines.b);
+    glBegin(GL_LINES);
+    glVertex2f(wxRight + ww / 2.0, wy);
+    glVertex2f(wxRight + ww / 2.0, wy + wh);
+    glVertex2f(wxRight, wy + wh / 2.0);
+    glVertex2f(wxRight + ww, wy + wh / 2.0);
+    glEnd();
+
+    // Door
+    glColor3f(door.r,door.g,door.b);
+    drawRect(bx + bw / 2.0 - 22.0, by, 44.0, 70.0);
+}
+
 
 
 void landscape() {
@@ -447,6 +559,7 @@ void landscape() {
     skyscraper();
     building();
     tree();
+    drawStation();
 
     // Repeat instance for seamless scroll
     glTranslatef(resetPoint, 0.0f, 0.0f);

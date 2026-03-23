@@ -20,20 +20,20 @@ void drawTrainCircle(float cx, float cy, float r, int segments = 40){
 
 // Wheel spokes
 void drawWheel(float cx, float cy, float r, float rotation){
-    glColor3f(0.10f, 0.10f, 0.12f);
+    glColor3f(0.2f, 0.0f, 0.0f);
     drawTrainCircle(cx, cy, r, 48);
 
-    glColor3f(0.65f, 0.65f, 0.70f);
+    glColor3f(0.85f, 0.1f, 0.1f);
     drawTrainCircle(cx, cy, r * 0.55f, 36);
 
-    glColor3f(0.85f, 0.85f, 0.88f);
+    glColor3f(0.55f, 0.0f, 0.0f);
     drawTrainCircle(cx, cy, r * 0.14f, 24);
 
     glPushMatrix();
     // Spin wheel spokes
     glTranslatef(cx, cy, 0.0f);
     glRotatef(rotation, 0.0f, 0.0f, 1.0f);
-    glColor3f(0.92f, 0.92f, 0.95f);
+    glColor3f(0.96f, 0.79f, 0.22f);
     for (int i = 0; i < 6; ++i) {
         glRotatef(60.0f, 0.0f, 0.0f, 1.0f);
         glBegin(GL_QUADS);
@@ -115,101 +115,97 @@ void rail(){
     drawRect(left, railTopY, right - left, railHeight);
 }
 
-void train(){
-    // Time drives animation
+
+void train() {
     float t = glutGet(GLUT_ELAPSED_TIME) * 0.001f;
-    // Wheel rotation angle
     float wheelRotation = -t * 280.0f;
-    // Train base position
-    float baseX = (WINDOW_WIDTH * 0.5f) - 120.0f;
-    float baseY = 164.0f;
+    
+    // Position the train on the tracks
+    float baseX = (WINDOW_WIDTH * 0.5f) - 130.0f; 
+    float baseY = 155.0f; // Adjusted to sit better on the rails
 
     glPushMatrix();
     glTranslatef(baseX, baseY, 0.0f);
 
-    // Smoke
+    //smoke w
     for (int i = 0; i < 6; ++i) {
         float life = fmodf(t * 0.42f + i * 0.17f, 1.0f);
         float rise = life * 90.0f;
-        float drift = -(life * 34.0f) + sinf(life * 6.283f + i) * 5.0f;
-        float size = 10.0f + life * 12.0f;
-        float alpha = 0.42f * (1.0f - life);
-        drawSmokePuff(150.0f + drift, 118.0f + rise, size, alpha);
+        float drift = -(life * 40.0f) + sinf(life * 6.283f + i) * 5.0f;
+        float size = 8.0f + life * 15.0f;
+        float alpha = 0.5f * (1.0f - life);
+        drawSmokePuff(185.0f + drift, 110.0f + rise, size, alpha);
     }
 
-    // Main body color
-    glColor3f(0.78f, 0.06f, 0.10f);
-    drawRect(0.0f, 18.0f, 210.0f, 58.0f);
+    //the connector with the big wheels
+    glColor3f(0.15f, 0.15f, 0.15f);
+    drawRect(-5.0f, 5.0f, 195.0f, 22.0f);
 
-    // Boiler section
-    glColor3f(0.88f, 0.10f, 0.14f);
-    drawRect(18.0f, 48.0f, 118.0f, 34.0f);
+    //the Connector with the small wheels
+    drawRect(120.0f,-10.0f,70.0f,15.0f);
 
-    // Front nose
-    glBegin(GL_POLYGON);
-    glColor3f(0.70f, 0.04f, 0.08f);
-    glVertex2f(210.0f, 18.0f);
-    glVertex2f(238.0f, 28.0f);
-    glVertex2f(238.0f, 68.0f);
-    glVertex2f(210.0f, 76.0f);
-    glEnd();
+    //the coupler(el changal)
+    drawRect(-15.0f,15.0f,10.0f,22.0f);
 
-    // Driver cabin
-    glColor3f(0.74f, 0.05f, 0.09f);
-    drawRect(126.0f, 58.0f, 56.0f, 50.0f);
-
-    // Roof shade
+    // Rear cabin 
+    glColor3f(0.78f, 0.06f, 0.10f); // Red
+    drawRect(5.0f, 27.0f, 80.0f, 75.0f);
+    
+    // Cabin Roof
     glColor3f(0.20f, 0.03f, 0.05f);
-    drawRect(118.0f, 106.0f, 72.0f, 10.0f);
-
-    // Gold trim
-    glColor3f(0.96f, 0.79f, 0.22f);
-    drawRect(10.0f, 36.0f, 220.0f, 5.0f);
-    drawRect(24.0f, 82.0f, 104.0f, 4.0f);
-
-    // Front bumper
-    glBegin(GL_TRIANGLES);
-    glColor3f(0.24f, 0.24f, 0.26f);
-    glVertex2f(228.0f, 18.0f);
-    glVertex2f(252.0f, 18.0f);
-    glVertex2f(240.0f, 2.0f);
-    glEnd();
-
-    // Chimney stack
-    glColor3f(0.18f, 0.18f, 0.20f);
-    drawRect(138.0f, 88.0f, 18.0f, 34.0f);
-    glColor3f(0.28f, 0.28f, 0.30f);
-    drawRect(132.0f, 118.0f, 30.0f, 8.0f);
-
-    // Cabin windows
+    drawRect(0.0f, 102.0f, 90.0f, 8.0f);
+    
+    // Cabin Window
     glColor3f(0.79f, 0.92f, 0.98f);
-    drawRect(135.0f, 70.0f, 18.0f, 22.0f);
-    drawRect(158.0f, 70.0f, 18.0f, 22.0f);
+    drawRect(25.0f, 65.0f, 40.0f, 25.0f);
 
-    // Headlight glow
-    glColor4f(1.0f, 0.93f, 0.55f, 0.30f);
-    drawTrainCircle(232.0f, 50.0f, 14.0f, 28);
-    glColor3f(1.0f, 0.90f, 0.42f);
-    drawTrainCircle(232.0f, 50.0f, 7.0f, 24);
+    //the nose of the train 
+    glColor3f(0.88f, 0.10f, 0.14f);
+    drawRect(85.0f, 27.0f, 110.0f, 55.0f);
 
-    // Connecting rod
-    glColor3f(0.82f, 0.82f, 0.86f);
-    glBegin(GL_QUADS);
-    glVertex2f(52.0f, 23.0f);
-    glVertex2f(160.0f, 23.0f);
-    glVertex2f(160.0f, 29.0f);
-    glVertex2f(52.0f, 29.0f);
+   // The front rounded 
+    glColor3f(0.70f, 0.04f, 0.08f);
+    glBegin(GL_POLYGON);
+        for(int i = 0; i <= 360; i += 10) {
+            float rad = i * 3.14159 / 180.0;
+            glVertex2f(195.0f + cos(rad) * 15.0f, 54.5f + sin(rad) * 27.5f);
+        }
     glEnd();
 
-    // Front wheel
-    drawWheel(62.0f, 18.0f, 22.0f, wheelRotation);
-    // Middle wheel
-    drawWheel(122.0f, 18.0f, 22.0f, wheelRotation);
-    // Rear wheel
-    drawWheel(182.0f, 18.0f, 22.0f, wheelRotation);
+    //Chimney
+    glColor3f(0.18f, 0.18f, 0.20f);
+    drawRect(175.0f, 82.0f, 18.0f, 30.0f); // Stem
+    glColor3f(0.96f, 0.79f, 0.22f); // Gold top
+    drawRect(170.0f, 112.0f, 28.0f, 6.0f);
 
-    // Small guide wheel
-    drawWheel(216.0f, 16.0f, 14.0f, wheelRotation * 1.2f);
+    // the little red bumper
+    glColor3f(0.88f, 0.10f, 0.14f);
+    glBegin(GL_TRIANGLES);
+        glVertex2f(190.0f, 27.0f);
+        glVertex2f(235.0f, -10.0f);
+        glVertex2f(190.0f, -10.0f);
+    glEnd();
+
+    // the yellow line
+    glColor3f(0.96f, 0.79f, 0.22f);
+    drawRect(85.0f, 35.0f, 95.0f, 4.0f);
+
+    // the big wheels
+    drawWheel(35.0f, 5.0f, 30.0f, wheelRotation);  
+    drawWheel(100.0f, 5.0f, 30.0f, wheelRotation); 
+
+    //the small wheels 
+    drawWheel(145.0f,-5.0f,15.0f,wheelRotation);
+    drawWheel(180.0f,-5.0f,15.0f,wheelRotation); 
+
+    // the big wheels rod
+    float rodOffset = sin(t * 5.0f) * 5.0f; // Simple animation for the rod
+    glColor3f(0.85f, 0.85f, 0.85f);
+    drawRect(35.0f + rodOffset, 12.0f, 80.0f, 5.0f);
+
+    //the small wheels rod
+    float rodOff = sin(t*-5.0f)*-5.0f;
+    drawRect(145.0f+rodOff,-5.0f,40.0f,5.0f);
 
     glPopMatrix();
 }

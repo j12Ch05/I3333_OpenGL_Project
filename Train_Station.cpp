@@ -30,6 +30,8 @@ void drawRect(float x, float y, float w, float h){
     glEnd();
 }
 
+
+//used in foreground.cpp
 void drawRails(){
 
     float railTopY = 150.0;
